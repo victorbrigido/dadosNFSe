@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Emissão de Nota Fiscal de Serviço</title>
+</head>
+<body>
+  <h1>Emissão de Nota Fiscal de Serviço</h1>
+  
+  <form id="notaFiscalForm">
+    <label for="cnpj">CNPJ/Prestador:</label>
+    <input type="text" id="cnpj" required><br><br>
+    
+    <label for="razaoSocial">Razão Social:</label>
+    <input type="text" id="razaoSocial" required><br><br>
+    
+    <label for="dataEmissao">Data de Emissão:</label>
+    <input type="date" id="dataEmissao" required><br><br>
+
+    <label for="tomadorServico">CNPJ/Tomador do Serviço:</label>
+    <input type="text" id="tomadorServico" required><br><br>
+
+    <label for="razaoSocial">Razão Social/Tomador:</label>
+    <input type="text" id="razaoSocialtomador" required><br><br>
+
+    <label for="descricaoServico">Descrição do Serviço:</label>
+    <textarea id="descricaoServico" cols="50" rows="5" required></textarea><br><br>
+    
+    
+    <label for="valorServico">Valor do Serviço(R$):</label>
+    <input type="number" id="valorServico" step="0.01" required><br><br>
+    
+    <label for="issRetido">ISS Retido(5%):</label>
+    <select id="issRetido" required>
+      <option value="sim">Sim</option>
+      <option value="nao">Não</option>
+    </select><br><br>
+    
+    <label for="outrosImpostos">Outros Impostos(PIS, COFINS, CSLL..):</label>
+    <input type="number" id="outrosImpostos" step="0.01"><br><br>
+    
+    <button type="button" onclick="calcularNotaFiscal()">Gerar Nota Fiscal</button>
+  </form>
+
+  <div id="resultadoNotaFiscal">
+    <!-- Aqui será exibida a nota fiscal gerada -->
+  </div>
+
+  <script>
+    function calcularNotaFiscal() {
+      // Captura os valores dos campos do formulário
+      const cnpj = document.getElementById('cnpj').value;
+      const razaoSocial = document.getElementById('razaoSocial').value;
+      const dataEmissao = document.getElementById('dataEmissao').value;
+      const valorServico = parseFloat(document.getElementById('valorServico').value);
+      const descricaoServico = document.getElementById('descricaoServico').value;
+      const tomadorServico = document.getElementById('tomadorServico').value;
+      const issRetido = document.getElementById('issRetido').checked;
+      const outrosImpostos = parseFloat(document.getElementById('outrosImpostos').value) || 0;
+      
+      // Cálculos de impostos (ISS e outros)
+     // const taxaISS = 5; // Taxa de ISS
+      let iss = 5;
+
+      if (issRetido) {
+        iss = valorServico * (5 / 100);
+        valorServico -= iss; // Desconta o valor do ISS retido
+      }
+
+      const totalImpostos = iss + outrosImpostos;
+
+      // Calcula o valor total (serviço + impostos)
+      const total = valorServico - totalImpostos;
+
+      // Gera a nota fiscal em formato HTML para exibição na página
+      const notaFiscalHTML = `
+        <h2>Nota Fiscal de Serviço</h2>
+        <p><strong>CNPJ:</strong> ${cnpj}</p>
+        <p><strong>Razão Social:</strong> ${razaoSocial}</p>
+        <p><strong>Data de Emissão:</strong> ${dataEmissao}</p>
+        <p><strong>Valor do Serviço:</strong> R$ ${valorServico.toFixed(2)}</p>
+        <p><strong>Descrição do Serviço:</strong> ${descricaoServico}</p>
+        <p><strong>Tomador do Serviço:</strong> ${tomadorServico}</p>
+        <p><strong>ISS Retido:</strong> ${issRetido ? 'Sim' : 'Não'}</p>
+        <p><strong>Valor do ISS:</strong> R$ ${iss.toFixed(2)}</p>
+        <p><strong>Outros Impostos:</strong> R$ ${outrosImpostos.toFixed(2)}</p>
+        <p><strong>Total a Pagar:</strong> R$ ${total.toFixed(2)}</p>
+      `;
+
+      // Exibe a nota fiscal gerada na página
+      document.getElementById('resultadoNotaFiscal').innerHTML = notaFiscalHTML;
+    }
+  </script>
+</body>
+</html>
